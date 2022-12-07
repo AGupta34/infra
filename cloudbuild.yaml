@@ -1,0 +1,42 @@
+steps:
+  - id: 'Setup Buckets'
+    name: 'gcr.io/cloud-builders/gcloud-slim'
+    entrypoint: 'sh'
+    args:
+      - ./buckets.sh
+    env:
+      - PROJECT_ID=${_PROJECT_ID}
+
+  - id: 'Pre-terraform'
+    name: 'gcr.io/cloud-builders/gcloud-slim'
+    entrypoint: 'sh'
+    args:
+      - ./preTerraform.sh
+    env:
+      - BRANCH_NAME=${_BRANCH_NAME}
+      - PROJECT_ID=${_PROJECT_ID}
+      - GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=sa-terraform@${_PROJECT_ID}.iam.gserviceaccount.com
+      - IS_DEV=${_IS_DEV}
+
+  - id: 'Terraform Common'
+    name: 'hashicorp/terraform:1.2.3'
+    entrypoint: 'sh'
+    args:
+      - ./terraform.sh
+    env:
+      - BRANCH_NAME=${_BRANCH_NAME}
+      - BRANCH_TAG=${_BRANCH_TAG}
+      - HEAD_BRANCH=${_HEAD_BRANCH}
+      - PROJECT_ID=${_PROJECT_ID}
+      - GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=sa-terraform@${_PROJECT_ID}.iam.gserviceaccount.com
+      - SHORT_SHA=${SHORT_SHA}
+      - IS_DEV=${_IS_DEV}
+
+  - id: 'Build common builder'
+    name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build', '-t', 'northamerica-northeast1-docker.pkg.dev/${_PROJECT_ID}/docker-builds/builder', '.' ]
+
+images: ['northamerica-northeast1-docker.pkg.dev/${_PROJECT_ID}/docker-builds/builder']
+timeout: 1800s
+substitutions:
+  _BUILD_NAME: northamerica-northeast1-docker.pkg.dev/${_PROJECT_ID}/docker-builds/builder

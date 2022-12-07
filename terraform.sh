@@ -1,0 +1,38 @@
+#!/bin/sh
+
+run_terraform() {
+  start_dir=$(pwd)
+  cd "terraform" || exit
+
+  echo "Init'ing terraform"
+  echo "*******************************************"
+  terraform init -backend-config "bucket=${PROJECT_ID}-tf-state" -backend-config "prefix=$1" || exit
+
+  echo "Planning terraform"
+  echo "***********************"
+  terraform plan || exit
+
+  if [ "$BRANCH_NAME" = "main" ]
+  then
+    if [ -z "$HEAD_BRANCH" ]
+    then
+      echo "Applying terraform"
+      echo "***********************"
+      terraform apply -auto-approve || exit
+    fi
+  fi
+
+  cd "$start_dir" || exit
+}
+
+
+PATH=$PATH:/gcloud/bin
+export TF_VAR_project=${PROJECT_ID}
+export TF_VAR_branch_tag=${BRANCH_TAG}
+
+echo "===================================================================="
+echo "Prepping infrastructure as defined in ${BRANCH_NAME}"
+echo "===================================================================="
+
+run_terraform "${PROJECT_ID}"
+rm -rf /var/lib/apt/lists/*
