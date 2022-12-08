@@ -16,7 +16,6 @@ steps:
       - BRANCH_NAME=${_BRANCH_NAME}
       - PROJECT_ID=${_PROJECT_ID}
       - GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=sa-terraform@${_PROJECT_ID}.iam.gserviceaccount.com
-      - IS_DEV=${_IS_DEV}
 
   - id: 'Terraform Common'
     name: 'hashicorp/terraform:1.2.3'
@@ -30,7 +29,6 @@ steps:
       - PROJECT_ID=${_PROJECT_ID}
       - GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=sa-terraform@${_PROJECT_ID}.iam.gserviceaccount.com
       - SHORT_SHA=${SHORT_SHA}
-      - IS_DEV=${_IS_DEV}
 
   - id: 'Build common builder'
     name: 'gcr.io/cloud-builders/docker'
