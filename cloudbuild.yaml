@@ -35,6 +35,9 @@ steps:
     args: [ 'build', '-t', 'northamerica-northeast1-docker.pkg.dev/${_PROJECT_ID}/docker-builds/builder', '.' ]
 
 images: ['northamerica-northeast1-docker.pkg.dev/${_PROJECT_ID}/docker-builds/builder']
+logsBucket: "gs://${_PROJECT_ID}-build-reports/build-logs/infra"
+options:
+  logging: GCS_ONLY
 timeout: 1800s
 substitutions:
   _BUILD_NAME: northamerica-northeast1-docker.pkg.dev/${_PROJECT_ID}/docker-builds/builder
