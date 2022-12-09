@@ -20,7 +20,6 @@ set -u
 
 
 echo "PROJECT_ID: $PROJECT_ID"
-echo "IS_DEV: $IS_DEV"
 
 PATH=$PATH:/gcloud/bin
 gcloud config set auth/impersonate_service_account "sa-terraform@${PROJECT_ID}.iam.gserviceaccount.com"
