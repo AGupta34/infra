@@ -21,4 +21,4 @@ create_bucket()
 
 gcloud config set auth/impersonate_service_account sa-terraform@${PROJECT_ID}.iam.gserviceaccount.com
 create_bucket 'tf-state'
-create_bucket 'reports'
+create_bucket 'build-reports'

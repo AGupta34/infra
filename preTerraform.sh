@@ -17,7 +17,7 @@ set -u
          "cloudresourcemanager.googleapis.com"  \
          "artifactregistry.googleapis.com"  
 
-}
+
 
 echo "PROJECT_ID: $PROJECT_ID"
 echo "IS_DEV: $IS_DEV"
