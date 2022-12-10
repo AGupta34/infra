@@ -31,18 +31,18 @@ resource "google_service_account" "cloud-run-sa" {
 }
 
 resource "google_project_iam_member" "sa-editor" {
-  project = var.project
+  project = var.project_id
   role    = "roles/editor"
   member  = "serviceAccount:${google_service_account.cloud-run-sa.email}"
 }
 
 resource "google_project_iam_member" "object-storage-admin" {
-  project = var.project
+  project = var.project_id
   role    = "roles/storage.objectAdmin"
-  member  = "serviceAccount:sa-terraform@${var.project}.iam.gserviceaccount.com"
+  member  = "serviceAccount:sa-terraform@${var.project_id}.iam.gserviceaccount.com"
 }
 resource "google_project_iam_member" "storage-admin" {
-  project = var.project
+  project = var.project_id
   role    = "roles/storage.admin"
-  member  = "serviceAccount:sa-terraform@${var.project}.iam.gserviceaccount.com"
+  member  = "serviceAccount:sa-terraform@${var.project_id}.iam.gserviceaccount.com"
 }
