@@ -24,17 +24,10 @@ steps:
       - ./terraform.sh
     env:
       - BRANCH_NAME=${_BRANCH_NAME}
-      - BRANCH_TAG=${_BRANCH_TAG}
-      - HEAD_BRANCH=${_HEAD_BRANCH}
       - PROJECT_ID=${_PROJECT_ID}
       - GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=sa-terraform@${_PROJECT_ID}.iam.gserviceaccount.com
-      - SHORT_SHA=${SHORT_SHA}
 
-  - id: 'Build common builder'
-    name: 'gcr.io/cloud-builders/docker'
-    args: [ 'build', '-t', 'northamerica-northeast1-docker.pkg.dev/${_PROJECT_ID}/docker-builds/builder', '.' ]
-
-images: ['northamerica-northeast1-docker.pkg.dev/${_PROJECT_ID}/docker-builds/builder']
+logsBucket: "gs://${_PROJECT_ID}-build-reports/build-logs/infra"
+options:
+  logging: GCS_ONLY
 timeout: 1800s
-substitutions:
-  _BUILD_NAME: northamerica-northeast1-docker.pkg.dev/${_PROJECT_ID}/docker-builds/builder

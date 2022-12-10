@@ -11,9 +11,6 @@ terraform {
   }
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
 
 resource "google_artifact_registry_repository" "docker-builds" {
   project = var.project_id
@@ -27,11 +24,22 @@ resource "google_artifact_registry_repository" "docker-builds" {
 resource "google_service_account" "cloud-run-sa" {
   account_id   = "cloud-run-sa"
   display_name = "Cloud Run Service Account"
-  project      = var.project
+  project      = var.project_id
 }
 
 resource "google_project_iam_member" "sa-editor" {
-  project = var.project
+  project = var.project_id
   role    = "roles/editor"
   member  = "serviceAccount:${google_service_account.cloud-run-sa.email}"
+}
+
+resource "google_project_iam_member" "object-storage-admin" {
+  project = var.project_id
+  role    = "roles/storage.objectAdmin"
+  member  = "serviceAccount:sa-terraform@${var.project_id}.iam.gserviceaccount.com"
+}
+resource "google_project_iam_member" "storage-admin" {
+  project = var.project_id
+  role    = "roles/storage.admin"
+  member  = "serviceAccount:sa-terraform@${var.project_id}.iam.gserviceaccount.com"
 }
