@@ -27,7 +27,7 @@ resource "google_artifact_registry_repository" "docker-builds" {
 resource "google_service_account" "cloud-run-sa" {
   account_id   = "cloud-run-sa"
   display_name = "Cloud Run Service Account"
-  project      = var.project
+  project      = var.project_id
 }
 
 resource "google_project_iam_member" "sa-editor" {
