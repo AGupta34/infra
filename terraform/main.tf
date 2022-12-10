@@ -11,9 +11,6 @@ terraform {
   }
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
 
 resource "google_artifact_registry_repository" "docker-builds" {
   project = var.project_id
