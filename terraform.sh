@@ -12,11 +12,8 @@ run_terraform() {
 
   if [ "$BRANCH_NAME" = "main" ]
   then
-    if [ -z "$HEAD_BRANCH" ]
-    then
       echo "Applying terraform"
       terraform apply -auto-approve || exit
-    fi
   fi
 
   cd "$start_dir" || exit
