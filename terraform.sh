@@ -8,7 +8,9 @@ run_terraform() {
   terraform init -backend-config "bucket=${PROJECT_ID}-tf-state" -backend-config "prefix=$1" || exit
 
   echo "Planning terraform"
-  terraform plan -lock=false || exit
+  terraform force-unlock -force 1670852025418850
+
+  terraform plan || exit
   
   if [ "$BRANCH_NAME" = "main" ]
   then
