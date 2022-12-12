@@ -48,20 +48,6 @@ resource "google_compute_network" "vpc_network" {
   name = "terraform-network"
 }
 
-resource "google_compute_subnetwork" "public-subnetwork" {
-  name          = "public-subnetwork"
-  ip_cidr_range = "10.2.0.0/28"
-  region        = "northamerica-northeast1"
-  network       = google_compute_network.vpc_network.name
-  }
-  
-resource "google_compute_subnetwork" "private-subnetwork" {
-  name          = "private-subnetwork"
-  ip_cidr_range = "10.2.0.0/24"
-  region        = "northamerica-northeast1"
-  network       = google_compute_network.vpc_network.name
-  }
-
 # It will allow Cloud SQL to be accessible from Cloud Run
 
 resource "google_compute_global_address" "google_managed_services_vpn_connector" {
@@ -73,7 +59,7 @@ resource "google_compute_global_address" "google_managed_services_vpn_connector"
     project       = var.project_id
 }
 resource "google_service_networking_connection" "vpcpeerings" {
-    network                 = google_compute_subnetwork.private-subnetwork.name
+    network                 = "${google_compute_network.vpc_network.self_link}"
     service                 = "servicenetworking.googleapis.com"
     reserved_peering_ranges = [google_compute_global_address.google_managed_services_vpn_connector.name]
 }
@@ -85,13 +71,13 @@ resource "google_vpc_access_connector" "connector" {
     project       = var.project_id
     name          = "vpc-connector"
     ip_cidr_range = "10.8.0.0/28"
-    network       = "google_compute_subnetwork.private-subnetwork.name"
+    network       = "${google_compute_network.vpc_network.name}"
     region        = "northamerica-northeast1"
     depends_on    = [google_compute_global_address.google_managed_services_vpn_connector]
 }
 
 resource "google_redis_instance" "todo_cache" {
-    authorized_network      = google_compute_subnetwork.private-subnetwork.name
+    authorized_network      = "${google_compute_network.vpc_network.name}"
     connect_mode            = "DIRECT_PEERING"
     location_id             = "northamerica-northeast1-a"
     memory_size_gb          = 1
@@ -117,7 +103,7 @@ resource "google_sql_database_instance" "todo_database" {
         disk_type             = "PD_SSD"
         ip_configuration {
             ipv4_enabled    = "false"
-            private_network = "google_compute_network.vpc_network.name"
+            private_network = "${google_compute_network.vpc_network.name}"
         }
         location_preference {
             zone = "northamerica-northeast1-a"
