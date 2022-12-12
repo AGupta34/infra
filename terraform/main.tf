@@ -105,7 +105,7 @@ resource "google_redis_instance" "todo_cache" {
 }
 
 resource "google_sql_database_instance" "todo_database" {
-    name="${var.basename}-db-${random_id.id.hex}"
+    name="${var.basename}-db"
     database_version = "MYSQL_5_7"
     region           = "northamerica-northeast1"
     project          = var.project_id
@@ -117,7 +117,7 @@ resource "google_sql_database_instance" "todo_database" {
         disk_type             = "PD_SSD"
         ip_configuration {
             ipv4_enabled    = false
-            private_network = default
+            private_network = google_compute_subnetwork.private-subnetwork.name
         }
         location_preference {
             zone = "northamerica-northeast1-a"
