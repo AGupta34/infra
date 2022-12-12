@@ -51,11 +51,11 @@ resource "google_compute_global_address" "google_managed_services_vpn_connector"
     purpose       = "VPC_PEERING"
     address_type  = "INTERNAL"
     prefix_length = 16
-    network       = local.defaultnetwork
+    network       = default
     project       = var.project_id
 }
 resource "google_service_networking_connection" "vpcpeerings" {
-    network                 = local.defaultnetwork
+    network                 = default
     service                 = "servicenetworking.googleapis.com"
     reserved_peering_ranges = [google_compute_global_address.google_managed_services_vpn_connector.name]
 }
@@ -73,7 +73,7 @@ resource "google_vpc_access_connector" "connector" {
 }
 
 resource "google_redis_instance" "todo_cache" {
-    authorized_network      = local.defaultnetwork
+    authorized_network      = default
     connect_mode            = "DIRECT_PEERING"
     location_id             = var.zone
     memory_size_gb          = 1
@@ -99,7 +99,7 @@ resource "google_sql_database_instance" "todo_database" {
         disk_type             = "PD_SSD"
         ip_configuration {
             ipv4_enabled    = false
-            private_network = local.defaultnetwork
+            private_network = default
         }
         location_preference {
             zone = var.zone
