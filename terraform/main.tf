@@ -44,6 +44,24 @@ resource "google_project_iam_member" "storage-admin" {
   member  = "serviceAccount:sa-terraform@${var.project_id}.iam.gserviceaccount.com"
 }
 
+resource "google_compute_network" "vpc_network" {
+  name = "terraform-network"
+}
+
+resource "google_compute_subnetwork" "public-subnetwork" {
+  name          = "public-subnetwork"
+  ip_cidr_range = "10.2.0.0/28"
+  region        = "northamerica-northeast1"
+  network       = google_compute_network.vpc_network.name
+  }
+  
+resource "google_compute_subnetwork" "private-subnetwork" {
+  name          = "private-subnetwork"
+  ip_cidr_range = "10.2.0.0/24"
+  region        = "northamerica-northeast1"
+  network       = google_compute_network.vpc_network.name
+  }
+
 # It will allow Cloud SQL to be accessible from Cloud Run
 
 resource "google_compute_global_address" "google_managed_services_vpn_connector" {
@@ -51,11 +69,11 @@ resource "google_compute_global_address" "google_managed_services_vpn_connector"
     purpose       = "VPC_PEERING"
     address_type  = "INTERNAL"
     prefix_length = 16
-    network       = default
+    network       = google_compute_subnetwork.private-subnetwork.name
     project       = var.project_id
 }
 resource "google_service_networking_connection" "vpcpeerings" {
-    network                 = default
+    network                 = google_compute_subnetwork.private-subnetwork.name
     service                 = "servicenetworking.googleapis.com"
     reserved_peering_ranges = [google_compute_global_address.google_managed_services_vpn_connector.name]
 }
@@ -67,20 +85,20 @@ resource "google_vpc_access_connector" "connector" {
     project       = var.project_id
     name          = "vpc-connector"
     ip_cidr_range = "10.8.0.0/28"
-    network       = "default"
-    region        = var.region
+    network       = "google_compute_subnetwork.private-subnetwork.name"
+    region        = "northamerica-northeast1"
     depends_on    = [google_compute_global_address.google_managed_services_vpn_connector]
 }
 
 resource "google_redis_instance" "todo_cache" {
-    authorized_network      = default
+    authorized_network      = google_compute_subnetwork.private-subnetwork.name
     connect_mode            = "DIRECT_PEERING"
-    location_id             = var.zone
+    location_id             = "northamerica-northeast1-a"
     memory_size_gb          = 1
     name                    = "${var.basename}-cache"
     project                 = var.project_id
     redis_version           = "REDIS_6_X"
-    region                  = var.region
+    region                  = "northamerica-northeast1"
     reserved_ip_range       = "10.137.125.88/29"
     tier                    = "BASIC"
     transit_encryption_mode = "DISABLED"
@@ -89,7 +107,7 @@ resource "google_redis_instance" "todo_cache" {
 resource "google_sql_database_instance" "todo_database" {
     name="${var.basename}-db-${random_id.id.hex}"
     database_version = "MYSQL_5_7"
-    region           = var.region
+    region           = "northamerica-northeast1"
     project          = var.project_id
     settings {
         tier                  = "db-g1-small"
@@ -102,7 +120,7 @@ resource "google_sql_database_instance" "todo_database" {
             private_network = default
         }
         location_preference {
-            zone = var.zone
+            zone = "northamerica-northeast1-a"
         }
     }
     deletion_protection = false
