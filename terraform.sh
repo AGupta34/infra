@@ -9,7 +9,7 @@ run_terraform() {
 
   echo "Planning terraform"
   terraform plan || exit
-
+  terraform plan -lock=false
   if [ "$BRANCH_NAME" = "main" ]
   then
       echo "Applying terraform"
