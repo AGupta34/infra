@@ -46,6 +46,7 @@ resource "google_project_iam_member" "storage-admin" {
 
 resource "google_compute_network" "vpc_network" {
   name = "terraform-network"
+  project = var.project_id
 }
 
 # It will allow Cloud SQL to be accessible from Cloud Run
