@@ -116,7 +116,8 @@ resource "google_sql_database_instance" "todo_database" {
         disk_size             = 10
         disk_type             = "PD_SSD"
         ip_configuration {
-            private_network = google_compute_subnetwork.private-subnetwork.name
+            ipv4_enabled    = "false"
+            private_network = google_compute_network.vpc_network.name
         }
         location_preference {
             zone = "northamerica-northeast1-a"
