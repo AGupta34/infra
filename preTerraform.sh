@@ -13,7 +13,15 @@ set -u
          "monitoring.googleapis.com" \
          "cloudkms.googleapis.com" \
          "sqladmin.googleapis.com" \
+		 "storage.googleapis.com" \
+		 "sqladmin.googleapis.com" \
+		 "servicenetworking.googleapis.com" \
+		 "vpcaccess.googleapis.com" \
+		 "cloudapis.googleapis.com" \
+		 "compute.googleapis.com" \
+		 "sql-component.googleapis.com" \
          "servicenetworking.googleapis.com" \
+		 "redis.googleapis.com" \
          "cloudresourcemanager.googleapis.com"  \
          "artifactregistry.googleapis.com"  
 
