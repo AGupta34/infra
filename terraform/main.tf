@@ -116,7 +116,7 @@ resource "google_sql_database_instance" "todo_database" {
     ]
     # This handles loading the schema after the database installs.
     provisioner "local-exec" {
-        working_dir = "${path.module}/../../database"
+        working_dir = "${path.module}/../database"
         command     = "./load_schema.sh ${var.project_id} ${google_sql_database_instance.todo_database.name}"
     }
 }
